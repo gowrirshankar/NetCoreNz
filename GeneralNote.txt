@@ -1,0 +1,11 @@
+Create a Project in your local machine.
+Create a Repository in GitHub website.
+Clone the local project with the repository.
+
+Create/Design the domain models based on the DB table.
+Install below 2 Entity Framework Core to access sql db from vs.
+	1) EF Core Sql Server
+	2) EF Core Tools
+Create DBContext class based on the domain models db table.
+	DBContext - Used to Make Connection, query and persist the data from the DB
+Create a ConnectionString to the DB
