@@ -9,3 +9,4 @@ Install below 2 Entity Framework Core to access sql db from vs.
 Create DBContext class based on the domain models db table.
 	DBContext - Used to Make Connection, query and persist the data from the DB
 Create a ConnectionString to the DB
+
