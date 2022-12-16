@@ -20,9 +20,9 @@ namespace NZWalks.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRegions()
+        public async Task<IActionResult> GetAllRegionsAsync()
         {
-            var regions = await regionRepository.GetAllAsync();
+            var regions = await regionRepository.GetAllRegionsAsync();
 
             //Return the data from the DTO(Data Transfer Object) instead of Domain(DB)
             //var regionsDTO = new List<RegionDTO>();
@@ -46,6 +46,124 @@ namespace NZWalks.API.Controllers
 
             var regionsDTO = mapper.Map<List<RegionDTO>>(regions); // mapper.Map<List<Destination>>(Source);
             return Ok(regionsDTO);
+        }
+
+        [HttpGet]
+        [Route("{id:guid}")] //Specifically mention that id should be of type guid. If any other datatype passed it will throw error.
+        [ActionName("GetRegionAsync")]
+        public async Task<IActionResult> GetRegionAsync(Guid id)
+        {
+            var region = await regionRepository.GetRegionAsync(id);
+            if(region == null)
+            {
+                return NotFound();
+            }
+            var regionDTO = mapper.Map<RegionDTO>(region);
+            return Ok(regionDTO);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddRegionAsync(AddRegionRequest addRegionRequest)
+        {
+            // Convert incoming data(addRegionRequest) to Domain Model
+            var region = new Region()
+            {
+                Code = addRegionRequest.Code,
+                Area = addRegionRequest.Area,
+                Lat = addRegionRequest.Lat,
+                Long = addRegionRequest.Long,
+                Name = addRegionRequest.Name,
+                Population = addRegionRequest.Population
+            };
+
+            // Pass details to Repository
+            region = await regionRepository.AddRegionAsync(region);
+           
+            // Convert back to DTO
+            var regionDTO = new RegionDTO()
+            {
+                Id = region.Id,
+                Code = region.Code,
+                Area = region.Area,
+                Lat = region.Lat,
+                Long = region.Long,
+                Name = region.Name,
+                Population = region.Population
+            };
+
+            return CreatedAtAction(nameof(GetRegionAsync), new { id = regionDTO.Id }, regionDTO); //Passing the action name, id value and the object to the CreatedAtAction method.
+
+        }
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteRegionAsync(Guid id)
+        {
+            //Get region from the database
+
+            var region = await regionRepository.DeleteAsync(id);
+
+            //If no region available then return NotFound
+            if(region == null)
+            {
+                return NotFound();
+            }
+
+            //If record deleted, then convert the response back to DTO
+            var regionDTO = new RegionDTO()
+            {
+                Id = region.Id,
+                Code = region.Code,
+                Area = region.Area,
+                Lat = region.Lat,
+                Long = region.Long,
+                Name = region.Name,
+                Population = region.Population
+            };
+            //var regionDTO = mapper.Map<RegionDTO>(region);
+
+            //Finally return Ok response
+            return Ok(regionDTO);
+        }
+
+        [HttpPut]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> UpdateRegionAsync([FromRoute] Guid id, [FromBody] UpdateRegionRequest updateRegionRequest)
+        {
+            //Convert DTO to Domain Model            
+            var updateRegion = new Region()
+            {
+                Code = updateRegionRequest.Code,
+                Area = updateRegionRequest.Area,
+                Lat = updateRegionRequest.Lat,
+                Long = updateRegionRequest.Long,
+                Name = updateRegionRequest.Name,
+                Population = updateRegionRequest.Population
+            };
+
+            //Update Region using Repository
+
+            updateRegion = await regionRepository.UpdateAsync(id, updateRegion);
+
+            //If null then return notfound
+            if(updateRegion == null)
+            {
+                return NotFound();
+            }
+            //Convert domain back to DTO
+            var regionDto = new RegionDTO()
+            {
+                Id = updateRegion.Id,
+                Code = updateRegion.Code,
+                Area = updateRegion.Area,
+                Lat = updateRegion.Lat,
+                Long = updateRegion.Long,
+                Name = updateRegion.Name,
+                Population = updateRegion.Population,
+            };
+            //Finally return OK response
+
+            return Ok(regionDto);
         }
     }
 }
