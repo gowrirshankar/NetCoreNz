@@ -10,3 +10,8 @@ Create DBContext class based on the domain models db table.
 	DBContext - Used to Make Connection, query and persist the data from the DB
 Create a ConnectionString to the DB
 
+Fluent Validation - NugetPackages
+FluentValidation
+FluentValidation.DependencyInjectionExtensions
+FluentValidation.AspNetCore
+
